@@ -1,0 +1,39 @@
+pipeline {
+ agent {
+     label {
+         label "built-in"
+         customWorkspace "/mnt/docker"
+     }
+ }    
+ stages {
+     stage ("one") {
+         steps {
+             sh "yum install git -y"
+             sh "git clone https://github.com/mrsachin1612/httpd.git -b 23q1"
+             sh " cd /mnt/docker/httpd/ && chmod 777 index.html"
+             sh " yum install docker -y"
+             sh "systemctl start docker"
+             sh "docker run -itdp 89:80 --name sachin9 httpd"
+             sh "docker cp /mnt/docker/httpd/index.html sachin9:/usr/local/apache2/htdocs/" 
+             
+             
+         }
+     }
+     stage ("two") { agent {
+         label {
+             label "built-in"
+             customWorkspace "/mnt/23q2"
+         }
+     }
+         steps {  sh "git clone https://github.com/mrsachin1612/httpd.git -b 23q2"
+                  sh "cd /mnt/23q2/httpd/ && chmod 777 index.html"
+                  sh "docker run -itdp 85:80 --name sachin5 httpd"
+                  sh "docker cp /mnt/23q2/httpd/index.html sachin5:/usr/local/apache2/htdocs/" 
+                  
+                 
+             
+         }
+     }
+ }
+}
+
